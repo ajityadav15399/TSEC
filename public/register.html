@@ -6,19 +6,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
-    <!-- Material Design Theming -->
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.orange-indigo.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
   
-    <!-- <link rel="stylesheet" href="main.css"> -->
+
     <title>Document</title>
 </head>
 <body>
   <button onclick="convertOCR()">CONVERT TO OCR</button>
   <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-header">
-  
-    <!-- Header section containing title -->
+
     <header class="mdl-layout__header mdl-color-text--white mdl-color--black-700">
       <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-grid">
         <div class="mdl-layout__header-row mdl-cell mdl-cell--12-col mdl-cell--12-col-tablet mdl-cell--8-col-desktop">
@@ -41,7 +39,6 @@
 
 
             <form id="sign-in-form" action="#">
-              <!-- Input to enter the phone number -->
               <input type='file' />
               <br><img id="myImg" src="#" alt="your image" height=200 width=100 >
 
@@ -50,24 +47,17 @@
                 <label class="mdl-textfield__label" for="phone-number">Enter your phone number...</label>
                 <span class="mdl-textfield__error">Input is not an international phone number!</span>
               </div>
-  
-              <!-- Sign-in button -->
+
               <button  class="mdl-button mdl-js-button mdl-button--raised" id="sign-in-button">Get OTP</button>
             </form>
-  
-            <!-- Button that handles sign-out -->
-            <!-- <button class="mdl-button mdl-js-button mdl-button--raised" id="sign-out-button">Sign-out</button> -->
-  
             <form id="verification-code-form" action="#">
               <!-- Input to enter the verification code -->
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input" type="text" id="verification-code">
                 <label class="mdl-textfield__label" for="verification-code">Enter the verification code...</label>
               </div>
-  
-              <!-- Button that triggers code verification -->
+
               <input type="submit" class="mdl-button mdl-js-button mdl-button--raised" id="verify-code-button" value="Verify Code"/>
-              <!-- Button to cancel code verification -->
               <button class="mdl-button mdl-js-button mdl-button--raised" id="cancel-verify-code-button">Cancel</button>
             </form>
           </div>
@@ -82,28 +72,9 @@
 <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
 
-<script>
-
-
-  // Your web app's Firebase configuration
-  var firebaseConfig = {
-    apiKey: "AIzaSyD0N6h9XOCl96usVGanwWhL0YjH-9Ya-zY",
-    authDomain: "tsec-a2279.firebaseapp.com",
-    databaseURL: "https://tsec-a2279.firebaseio.com",
-    projectId: "tsec-a2279",
-    storageBucket: "tsec-a2279.appspot.com",
-    messagingSenderId: "392629182860",
-    appId: "1:392629182860:web:4b5459c449e8b3f6b476a9"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  </script>
-
 
 <script type="text/javascript">
-  /**
-   * Set up UI event listeners and registering Firebase auth listeners.
-   */
+
   window.onload = function() {
     document.getElementById('verification-code-form').addEventListener('submit', onVerifyCodeSubmit);
 
@@ -111,7 +82,6 @@
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('sign-in-button', {
       'size': 'invisible',
       'callback': function(response) {
-    // reCAPTCHA solved, allow signInWithPhoneNumber.
     onSignInSubmit();
   }
 });
@@ -119,16 +89,11 @@
    recaptchaVerifier.render().then(function(widgetId) {
       window.recaptchaWidgetId = widgetId;
       console.log(widgetId);
-      //updateSignInButtonUI();
     });
   };
-  /**
-   * Function called when clicking the Login/Logout button.
-   */
+
   function onSignInSubmit() {
     if (isPhoneNumberValid()) {
-      //window.signingIn = true;
-      //updateSignInButtonUI();
       var phoneNumber = getPhoneNumberFromUserInput();
       var appVerifier = window.recaptchaVerifier;
       firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
@@ -139,7 +104,6 @@
           }).catch(function (error) {
             alert("! signing in");
 
-            // Error; SMS not sent
             console.error('Error during signInWithPhoneNumber', error);
             window.alert('Error during signInWithPhoneNumber:\n\n'
                 + error.code + '\n\n' + error.message);
@@ -147,9 +111,7 @@
           });
     }
   }
-  /**
-   * Function called when clicking the "Verify Code" button.
-   */
+
   function onVerifyCodeSubmit(e) {
     e.preventDefault();
     if (!!getCodeFromUserInput()) {
@@ -163,17 +125,14 @@
         window.verifyingCode = false;
         window.confirmationResult = null;
         convertOCR();
-        //updateVerificationCodeFormUI();
+
       }).catch(function (error) {
         alert("! succesfuly verified");
 
-        // User couldn't sign in (bad verification code?)
         console.error('Error while checking the verification code', error);
         window.alert('Error while checking the verification code:\n\n'
             + error.code + '\n\n' + error.message);
         window.verifyingCode = false;
-        //updateSignInButtonUI();
-        //updateVerifyCodeButtonUI();
       });
     }
   }
@@ -206,36 +165,26 @@
 })
 
   }
-  /**
-   * Cancels the verification code input.
-   */
+
   function cancelVerification(e) {
     e.preventDefault();
     window.confirmationResult = null;
     updateVerificationCodeFormUI();
     updateSignInFormUI();
   }
-  /**
-   * Signs out the user when the sign-out button is clicked.
-   */
+
   function onSignOutClick() {
     firebase.auth().signOut();
   }
-  /**
-   * Reads the verification code from the user input.
-   */
+
   function getCodeFromUserInput() {
     return document.getElementById('verification-code').value;
   }
-  /**
-   * Reads the phone number from the user input.
-   */
+
   function getPhoneNumberFromUserInput() {
     return document.getElementById('phone-number').value;
   }
-  /**
-   * Returns true if the phone number is valid.
-   */
+
   function isPhoneNumberValid() {
     var pattern = /^\+[0-9\s\-\(\)]+$/;
     var imgLoaded = imageIsLoaded();
@@ -245,9 +194,7 @@
     else 
       alert("Upload Image");
   }
-  /**
-   * Re-initializes the ReCaptacha widget.
-   */
+
   function resetReCaptcha() {
     if (typeof grecaptcha !== 'undefined'
         && typeof window.recaptchaWidgetId !== 'undefined') {
