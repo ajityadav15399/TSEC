@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .payment{
+            background-color: aquamarine;
+        }
+        .contract{
+            background-color: beige;
+        }
+
+        </style>
+            <script
+    src="https://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+    crossorigin="anonymous"></script>  
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyD0N6h9XOCl96usVGanwWhL0YjH-9Ya-zY",
+            authDomain: "tsec-a2279.firebaseapp.com",
+            databaseURL: "https://tsec-a2279.firebaseio.com",
+            projectId: "tsec-a2279",
+            storageBucket: "tsec-a2279.appspot.com",
+            messagingSenderId: "392629182860",
+            appId: "1:392629182860:web:4b5459c449e8b3f6b476a9"
+          
+          };
+          // Initialize Firebase
+          firebase.initializeApp(firebaseConfig);
+          var pPhone;
+          var uid;
+          var database = firebase.database();
+
+          firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+            console.log("signed in")
+            console.log(user.phoneNumber)
+            pPhone = user.phoneNumber;
+
+
+var query = firebase.database().ref("buyer").orderByKey();
+    query.once("value")
+    .then(function(snapshot) {
+            snapshot.forEach(function(childSnapshot) {
+            var key = childSnapshot.key;
+            var phone = childSnapshot.child("phone").val();
+            if(phone == pPhone){
+            uid = key;
+            // var data1 = childSnapshot.child("contracts").val();
+            var data2 = childSnapshot.child("payment").val();
+
+            // var keys1 = Object.keys(data1);
+            var keys2 = Object.keys(data2);
+            // console.log(keys1);
+           // console.log(keys2);
+            // console.log("contracts");
+            // for(var i=0;i<keys1.length;i++){
+            //     var Outerdiv = document.createElement('div');
+            //     Outerdiv.className = "contract";
+            //     Outerdiv.innerHTML = "CONTRACTS: ";
+            //     var innerDiv = document.createElement('div');
+            //     innerDiv.className = "innerDiv";
+            //     // var cButton = document.createElement('button');
+            //     // cButton.id="action";
+            //     //  cButton.innerText = "ACCEPT";
+            //     innerDiv.innerHTML = "Customer " + data1[keys1[i]].Customer + " : " +data1[keys1[i]].contract;
+            //     Outerdiv.appendChild(innerDiv);
+            //     // Outerdiv.appendChild(cButton);
+
+            //     document.body.appendChild(Outerdiv);
+            //     console.log(data1[keys1[i]].Customer);
+            //     var ref = database.ref('buyer/'+data1[keys1[i]].Customer+'/contract');
+            //     var fb = {
+            //         Uid: uid,
+            //         Status:"active"
+            //     }
+            //     ref.push(fb);
+            //     console.log(data1[keys1[i]].contract);
+
+            // }
+            console.log("payments")
+            for(var i=0;i<keys2.length;i++){
+                var Outerdiv = document.createElement('div');
+                Outerdiv.className = "payment";
+                Outerdiv.innerHTML = "PAYMENTS:"
+                var innerDiv = document.createElement('div');
+                innerDiv.className = "innerDiv";
+
+                innerDiv.innerHTML = "orderId:  " + data2[keys2[i]].orderKey  +" " +data2[keys2[i]].payment;
+                Outerdiv.appendChild(innerDiv);
+                document.body.appendChild(Outerdiv);
+
+
+
+
+                
+            }
+
+            }
+
+
+        })
+    }).catch((err) => {
+        console.log("Unexpected error:",error)
+});
+            }
+        });
+
+        
+        $(document).on('click','.innerDiv',function(){
+            // console.log($(this).text());
+            var pattern = $(this).text().split(" ",2);
+            console.log(pattern)
+            // var ref = "buyer/"+pattern[1];
+            var query = firebase.database().ref("buyer").orderByKey();
+            query.once("value")
+                .then(function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        var key = childSnapshot.key;
+                        if(key == pattern[1]){
+                        console.log(key)
+                                console.log(childSnapshot.val())
+                            // var data1 = childSnapshot.child("contracts").val();
+                            // var keys1 = Object.keys(data1);
+                                // for(var i=0;i<keys1.length;i++){
+
+                                //     console.log(data1[keys1[i]].contract);
+
+                                // }
+                            
+                        }
+                    })
+    }).catch((err) => {
+        console.log("Unexpected error:",error)
+});
+            
+        });
+        </script>
+</body>
+</html>

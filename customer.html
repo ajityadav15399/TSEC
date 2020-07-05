@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" type="text/css" href="login.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="login-page">
+        <h3>Login as Customer</h3>
+    <div class="form">
+        <!-- <form class="register-form">
+          <input type="text" placeholder="name"/>
+          <input type="password" placeholder="password"/>
+          <input type="text" placeholder="email address"/>
+          <button>create</button>
+          <p class="message">Already registered? <a href="#">Sign In</a></p>
+        </form> -->
+        
+        
+          <input type="text" id="UID" placeholder="UID"/>
+          <button id="getOtp">Get OTP</button>
+          <input type="text" id = 'otp' placeholder="OTP"/>
+          <button id="getOtp" onclick="verify()">login</button>
+          <p class="message">Not registered? <a href="CustomerRegister.html">Create an account</a></p>
+        
+      </div>
+    </div>
+    <script>
+        
+        var firebaseConfig = {
+            apiKey: "AIzaSyD0N6h9XOCl96usVGanwWhL0YjH-9Ya-zY",
+            authDomain: "tsec-a2279.firebaseapp.com",
+            databaseURL: "https://tsec-a2279.firebaseio.com",
+            projectId: "tsec-a2279",
+            storageBucket: "tsec-a2279.appspot.com",
+            messagingSenderId: "392629182860",
+            appId: "1:392629182860:web:4b5459c449e8b3f6b476a9"
+          
+          };
+          // Initialize Firebase
+          firebase.initializeApp(firebaseConfig);
+
+          var database = firebase.database();
+          
+          window.onload = function(){
+          
+          //  var uid =  document.getElementById("UID").value;
+            // console.log(uid == "901698547188");
+            
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('getOtp', {
+              'size': 'invisible',
+              'callback': function(response) {
+        
+            // reCAPTCHA solved, allow signInWithPhoneNumber.
+            getPhone();
+          }
+        });
+        
+           recaptchaVerifier.render().then(function(widgetId) {
+              window.recaptchaWidgetId = widgetId;
+              // console.log(widgetId);
+            });
+          }
+          
+        
+        
+          function EnteredOTP(p){
+            var phone = p;
+            console.log(phone)
+            var appVerifier = window.recaptchaVerifier;
+            console.log(phone);
+            firebase.auth().signInWithPhoneNumber(phone, appVerifier)
+                  .then(function (confirmationResult) {
+                    alert("OTP Sent");
+        
+                    window.confirmationResult = confirmationResult;
+                  }).catch(function (error) {
+                    alert("!Error");
+        
+                    // Error; SMS not sent
+                    console.error('Error during signInWithPhoneNumber', error);
+                    window.alert('Error during signInWithPhoneNumber:\n\n'
+                        + error.code + '\n\n' + error.message);
+        
+                  });
+        
+          }
+        
+          function verify(){
+            // var code = getCodeFromUserInput();
+            var code = document.getElementById('otp').value;
+              confirmationResult.confirm(code).then(function (result) {
+                console.log("succesfuly verified");
+                document.location.href = "customerDashboard.html";
+                var user = result.user;
+                window.verifyingCode = false;
+                window.confirmationResult = null;
+        
+              }).catch(function (error) {
+                alert("! succesfuly verified");
+        
+                console.error('Error while checking the verification code', error);
+                window.alert('Error while checking the verification code:\n\n'
+                    + error.code + '\n\n' + error.message);
+                window.verifyingCode = false;
+        
+              });
+          }
+        //    databse.ref('seller')
+        function getPhone(){
+           let val = document.getElementById('UID').value;
+        
+        var query = firebase.database().ref("buyer").orderByKey();
+        query.once("value")
+          .then(function(snapshot) {
+            snapshot.forEach(function(childSnapshot) {
+              // key will be "ada" the first time and "alan" the second time
+              var key = childSnapshot.key;
+              //console.log(key)
+              if(key == val){
+                //console.log(childSnapshot.val())
+                //console.log(childSnapshot.child("phone").val());
+                phone =  childSnapshot.child("phone").val();
+                // global = key;
+                EnteredOTP(phone);
+              }
+              
+        
+          });
+        }).catch((err) => {
+          console.log("Unexpected error:",error)
+        })
+        
+        }
+</script>        
+</body>
+</html>
